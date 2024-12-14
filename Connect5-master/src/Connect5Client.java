@@ -37,7 +37,7 @@ public class Connect5Client {
     private JFrame frame = new JFrame("Welcome to Connect 5");
     private JLabel messageLabel = new JLabel("...");
 
-    private Square[] board = new Square[54]; //9 columns x 6 rows
+    private Square[] board = new Square[81]; //9 columns x 9 rows
     private Square square;
     private ImageIcon disc;
     private ImageIcon opponentDisc;
@@ -79,7 +79,7 @@ public class Connect5Client {
         JPanel boardPanel = new JPanel();
         boardPanel.setBackground(Color.blue);
 
-        boardPanel.setLayout(new GridLayout(6, 9, 3, 3)); //9 columns x 6 Rows
+        boardPanel.setLayout(new GridLayout(9, 9, 3, 3)); //9 columns x 6 Rows
         for (int i = 0; i < board.length; i++) {
             final int j = i;
             board[i] = new Square();
@@ -225,7 +225,7 @@ public class Connect5Client {
             c.setName(s.nextLine());
             System.out.println("--- Game Command Log --- ");
             c.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            c.frame.setSize(720, 480);
+            c.frame.setSize(720, 720);
             c.frame.setVisible(true);
             c.frame.setResizable(false);
             c.play();

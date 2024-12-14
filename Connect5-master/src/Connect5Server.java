@@ -70,9 +70,12 @@ class Connect5Game {
     private Player[] board = {
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null,
-            null,null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null,
-            null,null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null };
 
     Player currentPlayer;
@@ -84,57 +87,52 @@ class Connect5Game {
     public boolean isWinner() {
 
         // 5 Accross - HorizontalCheck
-        for (int col = 0 ; col< 10-5 ; col++){ //column
-            for (int row = 0 ; row < 54 ; row+=9){ //row
-
-                if ( board[row + col]!= null &&
-                        board[row +col] == board[row +col+1] &&
-                        board[row +col] == board[row+col+2] &&
-                        board[row +col] ==  board[row+col+3] &&
-                        board[row +col] ==  board[row+col+4]){
-                    System.out.println("Horizontal win.");
-                    return true;
-
-                }
-            }
-        }
-        //5 Down - VerticalCheck (Sort Issue)
-        for (int row = 0 ; row< 27; row+=9){
-            for (int col = 0 ; col < 10  ; col++){
-
-                if ( board[row  + col]!= null &&
-                        board[row +col] == board[row +9 +col] &&
-                        board[row +col] == board[row+(18) +col] &&
-                        board[row +col] ==  board[row+(27) +col] &&
-                        board[row +col] ==  board[row+(36) +col]){
-                    System.out.println("Vertical win.");
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 5; col++) {  // 5-in-a-row
+                if (board[row * 9 + col] != null &&
+                        board[row * 9 + col] == board[row * 9 + col + 1] &&
+                        board[row * 9 + col] == board[row * 9 + col + 2] &&
+                        board[row * 9 + col] == board[row * 9 + col + 3] &&
+                        board[row * 9 + col] == board[row * 9 + col + 4]) {
                     return true;
                 }
             }
         }
-        //5 Diagonal - AscendingDiagonalCheck
-        for (int row = 27 ; row< 54 ; row+=9){
-            for (int col = 0 ; col <5 ; col++){
 
-                if (    board[row + col]!= null &&
-                        board[row +col]== board[(row-9) +col+1] &&
-                        board[(row-9) +col+1] == board[row-18 +col+2] &&
-                        board[(row-18) +col+2] ==  board[(row-27) +col+3] &&
-                        board[(row-27) +col+3] ==  board[(row-36) +col+4] ){
-                    System.out.println("Accending Diagonal.");
+        // Vertical check (down the columns)
+        for (int col = 0; col < 9; col++) {
+            for (int row = 0; row < 5; row++) {  // 5-in-a-column
+                if (board[row * 9 + col] != null &&
+                        board[row * 9 + col] == board[(row + 1) * 9 + col] &&
+                        board[row * 9 + col] == board[(row + 2) * 9 + col] &&
+                        board[row * 9 + col] == board[(row + 3) * 9 + col] &&
+                        board[row * 9 + col] == board[(row + 4) * 9 + col]) {
                     return true;
                 }
             }
         }
-        //5 Diagonal - DescendingDiagonalCheck
-        for (int row = 27 ; row< 54 ; row+=9){
-            for (int col = 4 ; col < 9; col++){
-                if (    board[row  + col]!= null &&
-                        board[row +col]== board[(row-9) +col-1 ] &&
-                        board[(row-9) +col-1 ] == board[(row-18) +col-2] &&
-                        board[(row-18) +col-2] ==  board[(row-27) +col-3] &&
-                        board[(row-27) +col-3] ==  board[(row-36) +col-4]){
-                    System.out.println("Descending Diagonal.");
+
+        // Ascending diagonal check (top-left to bottom-right)
+        for (int row = 4; row < 9; row++) {
+            for (int col = 0; col < 5; col++) {
+                if (board[row * 9 + col] != null &&
+                        board[row * 9 + col] == board[(row - 1) * 9 + col + 1] &&
+                        board[row * 9 + col] == board[(row - 2) * 9 + col + 2] &&
+                        board[row * 9 + col] == board[(row - 3) * 9 + col + 3] &&
+                        board[row * 9 + col] == board[(row - 4) * 9 + col + 4]) {
+                    return true;
+                }
+            }
+        }
+
+        // Descending diagonal check (top-right to bottom-left)
+        for (int row = 4; row < 9; row++) {
+            for (int col = 4; col < 9; col++) {
+                if (board[row * 9 + col] != null &&
+                        board[row * 9 + col] == board[(row - 1) * 9 + col - 1] &&
+                        board[row * 9 + col] == board[(row - 2) * 9 + col - 2] &&
+                        board[row * 9 + col] == board[(row - 3) * 9 + col - 3] &&
+                        board[row * 9 + col] == board[(row - 4) * 9 + col - 4]) {
                     return true;
                 }
             }
