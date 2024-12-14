@@ -5,28 +5,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * The Client for a network two-player game of 5-in-a-row (Connect 5).
- *
- * This project is an online two-player game of Connect 5 (5-in-a-Row) that uses
- * client-server architecture implemented by using Java. To Achieve this a new
- * application-level protocol called Connect5 Protocol (C5P) was created and
- * is entirely plain text. The messages of the C5P are -
- * Client -> Server   : MOVE <n>  (0 <= n <= 54) , QUIT.
- * Server -> Client   :  WELCOME <String> (String in {"RED", "YELLOW"}), VALID_MOVE
- *                    , OTHER_PLAYER_MOVED <n>, VICTORY, DEFEAT, TIE, MESSAGE <text>.
- *
- * @author Aisling Boner
- * @version 1.0
- *
- * NOTE: Server/Client Theory Adaptions from Deitel and Deitel "Java How to Program" book.
- */
 public class Connect5Server {
 
-    /**
-     * Main() - Runs the application & pairs up clients that connect together
-     * for a game of Connect5.
-     */
     public static void main(String[] args) throws Exception {
 
         try (ServerSocket listener = new ServerSocket(5000)) {
@@ -41,7 +21,7 @@ public class Connect5Server {
                 Connect5Game game = new Connect5Game();
                 Connect5Game.Player player1 = game.new Player(listener.accept(), "RED");
                 System.out.println("Player1 has connected.");
-                Connect5Game.Player player2 = game.new Player(listener.accept(), "YELLOW");
+                Connect5Game.Player player2 = game.new Player(listener.accept(), "BLUE");
                 System.out.println("Player2 has connected.");
                 player1.setOpponent(player2);
                 player2.setOpponent(player1);
@@ -53,20 +33,9 @@ public class Connect5Server {
     }
 }
 
-/**
- * Connect5Game Class - a two-player game of connect5 for 2 paired clients
- * to play. It consists of the general structure and setUp of the game
- * including its rules.
- */
+
 class Connect5Game {
 
-    /**
-     * Game board consists of 54 squares (9 columns * 6 rows). Using a simple
-     * array to depict this we can reference player moves and show this on the user interface
-     * i.e. empty squares or chosen squares selected by the player as done in the original game.
-     * If null, the corresponding square has not been chosen, otherwise the array cell stores
-     * a reference to the player that selected it.
-     */
     private Player[] board = {
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null,

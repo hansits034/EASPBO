@@ -15,23 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-/**
- * The Server for a network two-player game of 5-in-a-row (Connect 5).
- *
- * This project is an online two-player game of Connect 5 (5-in-a-Row) that uses
- * client-server architecture implemented by using Java. To Achieve this a new
- * application-level protocol called Connect5 Protocol (C5P) was created and
- * is entirely plain text. The messages of the C5P are:
- *
- * Client -> Server    : MOVE <n>  (0 <= n <= 54) , QUIT.
- * Server -> Client    :  WELCOME <String> (String in {"RED", "YELLOW"}), VALID_MOVE
- *                     , OTHER_PLAYER_MOVED <n>, VICTORY, DEFEAT, TIE, MESSAGE <text>.
- *
- * @author Aisling Boner
- * @version 1.0
- *
- * NOTE: Server/Client Theory Adaptions from Deitel and Deitel "Java How to Program" book.
- */
 public class Connect5Client {
 
     private JFrame frame = new JFrame("Welcome to Connect 5");
@@ -77,7 +60,7 @@ public class Connect5Client {
         frame.getContentPane().add(messageLabel, BorderLayout.SOUTH);
 
         JPanel boardPanel = new JPanel();
-        boardPanel.setBackground(Color.blue);
+        boardPanel.setBackground(Color.black);
 
         boardPanel.setLayout(new GridLayout(9, 9, 3, 3)); //9 columns x 6 Rows
         for (int i = 0; i < board.length; i++) {
@@ -106,12 +89,12 @@ public class Connect5Client {
                 String mark = response.substring(8);
                 if (mark.equals("RED")) {
                     //Sets colour disc for Player1.
-                    disc = new ImageIcon(getClass().getResource("/resources/redDisc.png"));
-                    opponentDisc = new ImageIcon(getClass().getResource("/resources/yellowDisc.png"));
+                    disc = new ImageIcon(getClass().getResource("/resources/redness.png"));
+                    opponentDisc = new ImageIcon(getClass().getResource("/resources/Bluey.png"));
                 } else {
                     //Sets colour disc for Player2.
-                    disc = new ImageIcon(getClass().getResource("/resources/yellowDisc.png"));
-                    opponentDisc = new ImageIcon(getClass().getResource("/resources/redDisc.png"));
+                    disc = new ImageIcon(getClass().getResource("/resources/Bluey.png"));
+                    opponentDisc = new ImageIcon(getClass().getResource("/resources/redness.png"));
                 }
 
                 frame.setTitle("Connect 5: " + name +" is the colour " + mark + ".");
