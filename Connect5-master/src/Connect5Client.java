@@ -16,20 +16,20 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 /**
- * The Server for a network two-player game of 5-in-a-row (Connect 5).  
- * 
- * This project is an online two-player game of Connect 5 (5-in-a-Row) that uses 
- * client-server architecture implemented by using Java. To Achieve this a new 
+ * The Server for a network two-player game of 5-in-a-row (Connect 5).
+ *
+ * This project is an online two-player game of Connect 5 (5-in-a-Row) that uses
+ * client-server architecture implemented by using Java. To Achieve this a new
  * application-level protocol called Connect5 Protocol (C5P) was created and
  * is entirely plain text. The messages of the C5P are:
  *
- * Client -> Server    : MOVE <n>  (0 <= n <= 54) , QUIT.   
+ * Client -> Server    : MOVE <n>  (0 <= n <= 54) , QUIT.
  * Server -> Client    :  WELCOME <String> (String in {"RED", "YELLOW"}), VALID_MOVE
  *                     , OTHER_PLAYER_MOVED <n>, VICTORY, DEFEAT, TIE, MESSAGE <text>.
- * 
+ *
  * @author Aisling Boner
  * @version 1.0
- * 
+ *
  * NOTE: Server/Client Theory Adaptions from Deitel and Deitel "Java How to Program" book.
  */
 public class Connect5Client {
@@ -50,15 +50,15 @@ public class Connect5Client {
     private String name;
     String response;
 
-    
-    /** 
-     * @return String 
+
+    /**
+     * @return String
      */
     public String getName() {
         return name;
     }
-    
-    /** 
+
+    /**
      * @param name
      */
     public void setName(String name){
@@ -70,7 +70,7 @@ public class Connect5Client {
 
         socket = new Socket(serverAddress, 5000);
         in = new BufferedReader(new InputStreamReader(
-            socket.getInputStream()));
+                socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
 
         messageLabel.setBackground(Color.lightGray);
@@ -92,10 +92,10 @@ public class Connect5Client {
         frame.getContentPane().add(boardPanel, BorderLayout.CENTER);
     }
 
-   /**
+    /**
      * play() - Client main thread play() listens for messages from the server
-     * & displays moves to each of the players during the game. 
-     * 
+     * & displays moves to each of the players during the game.
+     *
      */
     public void play() throws Exception {
         try {
@@ -113,7 +113,7 @@ public class Connect5Client {
                     disc = new ImageIcon(getClass().getResource("/resources/yellowDisc.png"));
                     opponentDisc = new ImageIcon(getClass().getResource("/resources/redDisc.png"));
                 }
-             
+
                 frame.setTitle("Connect 5: " + name +" is the colour " + mark + ".");
             }
 
@@ -154,43 +154,43 @@ public class Connect5Client {
 
 
                 }
-                 else if (response.startsWith("OTHER_PLAYER_LEFT")) {
+                else if (response.startsWith("OTHER_PLAYER_LEFT")) {
                     JOptionPane.showMessageDialog(frame, "Other Player left");
                     System.out.println("Other Player Exited.");
                     break;//new
 
-                 }
                 }
+            }
             out.println("QUIT");
-            
+
 
         }catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                socket.close();
-                frame.dispose();
-            }
+            e.printStackTrace();
+        } finally {
+            socket.close();
+            frame.dispose();
         }
-    
+    }
 
-   
+
+
     /**
-     * playAgain() - 
+     * playAgain() -
      * Gives the Players the oppourtunity for a re-match.
      */
     private boolean playAgain() {
-       
+
         int response = JOptionPane.showConfirmDialog(frame,
-        "Want to play again?",
-        "GAME OVER" , 
-       JOptionPane.YES_NO_OPTION);
-       frame.dispose();
-       return response == JOptionPane.YES_OPTION;
-       
+                "Want to play again?",
+                "GAME OVER" ,
+                JOptionPane.YES_NO_OPTION);
+        frame.dispose();
+        return response == JOptionPane.YES_OPTION;
+
     }
 
     /**
-     * Square class - 
+     * Square class -
      * Sets up settings for each square in the JFrame incl. text & Icon used.
      */
     static class Square extends JPanel {
@@ -210,15 +210,15 @@ public class Connect5Client {
         }
     }
     /**
-     * Main() - Runs the client side application allowing the client to pairs up 
+     * Main() - Runs the client side application allowing the client to pairs up
      * with the specified server & take part in a game of Connect5 with a second player.
      */
     public static void main(String[] args) throws Exception {
-        
-        
-        
+
+
+
         while (true) {
-            
+
             Connect5Client c = new Connect5Client("127.0.0.1");//Localhost passed in as serveraddress
             Scanner s = new Scanner(System.in);
             System.out.println("Please enter your name: ");
@@ -229,11 +229,11 @@ public class Connect5Client {
             c.frame.setVisible(true);
             c.frame.setResizable(false);
             c.play();
-            
+
             if (!c.playAgain()) {
                 break;
-            } 
-            
+            }
+
         }
     }
 }
