@@ -31,6 +31,7 @@ public class Connect5Client {
     //private PrintWriter out;
     private PrintWriter out;
     private String name;
+    private boolean isPlayerTurn = false;
     String response;
 
 
@@ -66,10 +67,15 @@ public class Connect5Client {
         for (int i = 0; i < board.length; i++) {
             final int j = i;
             board[i] = new Square();
+            System.out.println("isPlayerTurn: " + isPlayerTurn);
             board[i].addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
-                    square = board[j];
-                    out.println("MOVE " + j);}});
+                    if(isPlayerTurn){
+                        square = board[j];
+                        out.println("MOVE " + j);
+                    }
+                }
+            });
             boardPanel.add(board[i]);
         }
         frame.getContentPane().add(boardPanel, BorderLayout.CENTER);
@@ -84,7 +90,7 @@ public class Connect5Client {
         try {
             String response;
             response = in.readLine();
-
+            System.out.println(response);
             if (response.startsWith("WELCOME")) {
                 String mark = response.substring(8);
                 if (mark.equals("RED")) {
@@ -102,12 +108,14 @@ public class Connect5Client {
 
             while (true) {
                 response = in.readLine();
+                System.out.println(response);
                 if (response.startsWith("VALID_MOVE")) {
                     messageLabel.setText("Valid Move, Opponents Turn, Please Wait...");
                     square = board[Integer.parseInt(response.substring(10))];
                     square.setIcon(disc);
                     square.repaint();
                     System.out.println("Valid move made.");
+                    isPlayerTurn = false;
 
                 } else if (response.startsWith("OPPONENT_MOVED")) {
                     int loc = Integer.parseInt(response.substring(15));
@@ -115,6 +123,7 @@ public class Connect5Client {
                     board[loc].repaint();
                     messageLabel.setText("Opponent Moved. Your turn Again!");
                     System.out.println("Opponent Moved.");
+                    isPlayerTurn = true;
 
                 }else if (response.startsWith("VICTORY")) {
                     JOptionPane.showMessageDialog(frame, "Congratulations you WON!!!");
@@ -132,7 +141,15 @@ public class Connect5Client {
                     break;
 
                 }else if (response.startsWith("MESSAGE")) {
-                    messageLabel.setText(response.substring(8));
+                    System.out.println("INI MESSAGE: " + response);
+                    String messageFill = response.substring(8);
+                    System.out.println("INI PARAM:" + messageFill);
+                    messageLabel.setText(messageFill);
+                    if(messageFill.startsWith("Your move")){
+                        System.out.println("Player Turn");
+                        isPlayerTurn = true;
+                    }
+                    System.out.println("isPlayerTurn: " + isPlayerTurn);
                     System.out.println("Message");
 
 
