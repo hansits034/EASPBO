@@ -210,7 +210,7 @@ class Connect5Game {
                         if (validlocation!= -1) {
                             output.println("VALID_MOVE"+validlocation);
                             if(isWinner()){
-                                output.println("DEFEAT");
+                                output.println("VICTORY");
                             }else{
                                 if(boardFilledUp()){
                                     output.println("TIE");
