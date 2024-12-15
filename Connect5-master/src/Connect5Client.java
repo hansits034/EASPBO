@@ -20,7 +20,7 @@ import javax.swing.BorderFactory;
 
 public class Connect5Client {
 
-    private JFrame frame = new JFrame("Welcome to Connect 5");
+    private JFrame frame = new JFrame("Welcome to Connect 5 Game");
     private JLabel messageLabel = new JLabel("...");
 
     private Square[] board = new Square[81]; //9 columns x 9 rows
@@ -37,22 +37,17 @@ public class Connect5Client {
     private Timer timer;
     private int timeLeft = 15;
     private JLabel timerLabel = new JLabel("Time left: 15s", JLabel.CENTER);
-
-    /**
-     * @return String
-     */
+    
+    // getter and setter for user name
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name
-     */
     public void setName(String name){
         this.name = name;
     }
 
-
+    // constructor
     public Connect5Client(String serverAddress) throws Exception {
 
         socket = new Socket(serverAddress, 5000);
@@ -105,8 +100,8 @@ public class Connect5Client {
     }
 
     /**
-     * play() - Client main thread play() listens for messages from the server
-     * & displays moves to each of the players during the game.
+     * play() - main function for user to play, including listens messages from the server
+     * & show GUI to player
      *
      */
     public void play() throws Exception {
@@ -117,11 +112,11 @@ public class Connect5Client {
             if (response.startsWith("WELCOME")) {
                 String mark = response.substring(8);
                 if (mark.equals("RED")) {
-                    //Sets colour disc for Player1.
+                    // set icon to player red
                     disc = new ImageIcon(getClass().getResource("/resources/redness.png"));
                     opponentDisc = new ImageIcon(getClass().getResource("/resources/Bluey.png"));
                 } else {
-                    //Sets colour disc for Player2.
+                    // set icon to player blue
                     disc = new ImageIcon(getClass().getResource("/resources/Bluey.png"));
                     opponentDisc = new ImageIcon(getClass().getResource("/resources/redness.png"));
                 }
@@ -139,6 +134,7 @@ public class Connect5Client {
                     square.setIcon(disc);
                     square.repaint();
                     System.out.println("Valid move made.");
+                    // change turn to opponent
                     isPlayerTurn = false;
                     if (timer != null) {
                         timer.stop();
@@ -149,6 +145,7 @@ public class Connect5Client {
                     board[loc].repaint();
                     messageLabel.setText(name+ ": Opponent Moved. Your turn Again!");
                     System.out.println("Opponent Moved.");
+                    // change turn to player
                     isPlayerTurn = true;
                     timeLeft = 15;
                     timerLabel.setText("Time left: " + timeLeft + "s");
@@ -224,8 +221,7 @@ public class Connect5Client {
 
 
     /**
-     * playAgain() -
-     * Gives the Players the oppourtunity for a re-match.
+     * playAgain() - function to ask player if want to play again or not. If no, close the program. If yes, restart the program
      */
     private boolean playAgain() {
 
@@ -239,8 +235,7 @@ public class Connect5Client {
     }
 
     /**
-     * Square class -
-     * Sets up settings for each square in the JFrame incl. text & Icon used.
+     * Class to handle GUI
      */
     static class Square extends JPanel {
         JLabel label = new JLabel((Icon)null);
@@ -259,13 +254,9 @@ public class Connect5Client {
         }
     }
     /**
-     * Main() - Runs the client side application allowing the client to pairs up
-     * with the specified server & take part in a game of Connect5 with a second player.
+     * main function to start the program
      */
     public static void main(String[] args) throws Exception {
-
-
-
         while (true) {
 
             Connect5Client c = new Connect5Client("127.0.0.1");//Localhost passed in as serveraddress
@@ -288,7 +279,6 @@ public class Connect5Client {
             if (!c.playAgain()) {
                 break;
             }
-
         }
     }
 }

@@ -50,14 +50,12 @@ class Connect5Game {
     Player currentPlayer;
 
     /**
-     * isWinner() - States the situations where a player has won.
-     * @return The current state of the board, determines if a player has won
+     * isWinner() - return true if there is a winner
      */
     public boolean isWinner() {
-
-        // 5 Accross - HorizontalCheck
+        // Check for horizontal
         for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 5; col++) {  // 5-in-a-row
+            for (int col = 0; col < 5; col++) {
                 if (board[row * 9 + col] != null &&
                         board[row * 9 + col] == board[row * 9 + col + 1] &&
                         board[row * 9 + col] == board[row * 9 + col + 2] &&
@@ -68,9 +66,9 @@ class Connect5Game {
             }
         }
 
-        // Vertical check (down the columns)
+        // Check for vertical
         for (int col = 0; col < 9; col++) {
-            for (int row = 0; row < 5; row++) {  // 5-in-a-column
+            for (int row = 0; row < 5; row++) {  
                 if (board[row * 9 + col] != null &&
                         board[row * 9 + col] == board[(row + 1) * 9 + col] &&
                         board[row * 9 + col] == board[(row + 2) * 9 + col] &&
@@ -81,7 +79,7 @@ class Connect5Game {
             }
         }
 
-        // Ascending diagonal check (top-left to bottom-right)
+        // Check diagonal ascending
         for (int row = 4; row < 9; row++) {
             for (int col = 0; col < 5; col++) {
                 if (board[row * 9 + col] != null &&
@@ -94,7 +92,7 @@ class Connect5Game {
             }
         }
 
-        // Descending diagonal check (top-right to bottom-left)
+        // Check diagonal descending
         for (int row = 4; row < 9; row++) {
             for (int col = 4; col < 9; col++) {
                 if (board[row * 9 + col] != null &&
@@ -110,9 +108,7 @@ class Connect5Game {
     }
 
     /**
-     * boardFilledUp() - Checks if the board squares are
-     * full
-     * @return If there is or isnt empty squares.
+     * return true if there is no space
      */
     public boolean boardFilledUp() {
         for (int i = 0; i < board.length; i++) {
@@ -124,38 +120,32 @@ class Connect5Game {
     }
 
     /**
-     * moveCheck() - method is called by each player thread when
-     * they make a move. This method checks to see if the move is legal
-     * and if so updates on both clients GUIs.
+     * function to check if every player move valid and switch turn if valid
      */
     public synchronized int moveCheck(int location, Player player) {
-        // Directly check if the chosen location is empty
         if (board[location] == null) {
-            board[location] = player;  // Place the player's move
+            board[location] = player;
             currentPlayer = currentPlayer.opponent; // Switch to the opponent
-            currentPlayer.opponentMoves(location); // Inform opponent of the move
-            return location;  // Return the location of the move
+            currentPlayer.opponentMoves(location); // Give info to opponent
+            return location;  // return the location if valid
         }
-        return -1; // Invalid move if the spot is not empty
+        return -1; // return if move invalid
     }
 
 
     /**
-     * Player class - extends helper threads for this multithreaded
-     * server game. Allows for text (read & write) communication with
-     * the client. Consists of a socket with I/O streams.
+     * Player class - extends thread for multithreading server game. 
+     * To communicate to player.
      */
     class Player extends Thread {
-        String mark;//A Player is identified by a character mark which is either '1' or '2'.
+        String mark;
         Player opponent;
         Socket socket;
         BufferedReader input;
         PrintWriter output;
 
         /**
-         * Player constructor - this constructs a handler thread for a given socket
-         * and mark. It then initializes the stream fields & displays the initial messages for the
-         * players determining the game state.
+         * constructor function for player - contruct the player and setup socket to communicate.
          */
         public Player(Socket socket, String mark) {
             this.socket = socket;
@@ -173,39 +163,42 @@ class Connect5Game {
             }
         }
 
-        /**
-         * Sets opponent Player.
-         */
+        // setter for opponent 
         public void setOpponent(Player opponent) {
             this.opponent = opponent;
 
         }
 
         /**
-         * opponentMoves() - Handles messages from the
-         * opponent & Checks if the opponent player has won or not
-         * and also checks if the board is full.
+         * opponentMoves() - Handles messages to inform oppenent moves
          */
         public void opponentMoves(int location) {
             output.println("OPPONENT_MOVED " + location);
-            output.println(
-                    isWinner() ? "DEFEAT" : boardFilledUp() ? "TIE" : "");
+            // check if game done
+            if(isWinner()){
+                output.println("DEFEAT");
+            }else{
+                if(boardFilledUp()){
+                    output.println("TIE");
+                }else{
+                    output.println("");
+                }
+            }
         }
 
         /**
-         * run() - Run method of this thread only starts once the two
-         * Client players have connected.
+         * function run() to show player when the game started
          */
         public void run() {
             try {
                 output.println("MESSAGE All players connected");
 
-                if (mark.equals("RED")) {//Tells the 1st connected Client that it is their move.
+                if (mark.equals("RED")) { // send initiate moves
                     output.println("MESSAGE Your move");
                 }
 
-
-                while (true) {// Repeatedly get Client commands & Processes them.
+                // loop to get player command and process it
+                while (true) {
                     String command = input.readLine();
                     if(command == null){
                         System.out.println("Null command");
@@ -216,15 +209,20 @@ class Connect5Game {
                         int validlocation = moveCheck(location, this);
                         if (validlocation!= -1) {
                             output.println("VALID_MOVE"+validlocation);
-                            output.println(isWinner() ? "VICTORY"
-                                    : boardFilledUp() ? "TIE"
-                                    : "");
+                            if(isWinner()){
+                                output.println("DEFEAT");
+                            }else{
+                                if(boardFilledUp()){
+                                    output.println("TIE");
+                                }else{
+                                    output.println("");
+                                }
+                            };
                         } else {
                             output.println("MESSAGE Wait your Turn");
                         }
                     } else if (command.startsWith("TIME_UP")){
                         System.out.println("TIME UP. Change Turn");
-                        output.println("TESSS TIME UPPP");
                         opponent.output.println("OPPONENT_TIME_UP ");
                         currentPlayer = currentPlayer.opponent;
                     }else if (command.startsWith("QUIT")) {
