@@ -8,12 +8,15 @@ import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.text.NumberFormat.Style;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.Timer;
 
 public class Connect5Client {
 
@@ -33,6 +36,9 @@ public class Connect5Client {
     private String name;
     private boolean isPlayerTurn = false;
     String response;
+    private Timer timer;
+    private int timeLeft = 15;
+    private JLabel timerLabel = new JLabel("Time left: 15s");
 
 
     /**
@@ -72,12 +78,14 @@ public class Connect5Client {
                     if(isPlayerTurn){
                         square = board[j];
                         out.println("MOVE " + j);
+                        System.out.println("Sent to server: MOVE "+j);
                     }
                 }
             });
             boardPanel.add(board[i]);
         }
         frame.getContentPane().add(boardPanel, BorderLayout.CENTER);
+        frame.getContentPane().add(timerLabel, BorderLayout.NORTH);
     }
 
     /**
@@ -110,12 +118,20 @@ public class Connect5Client {
                 System.out.println(response);
                 if (response.startsWith("VALID_MOVE")) {
                     messageLabel.setText("Valid Move, Opponents Turn, Please Wait...");
-                    square = board[Integer.parseInt(response.substring(10))];
+                    int chosenBoard = Integer.parseInt(response.substring(10));
+                    // if(chosenBoard == 100){
+                    //     isPlayerTurn = false;
+                    //     System.out.println("Time's up");
+                    //     continue;
+                    // }
+                    square = board[chosenBoard];
                     square.setIcon(disc);
                     square.repaint();
                     System.out.println("Valid move made.");
                     isPlayerTurn = false;
-
+                    if (timer != null) {
+                        timer.stop();
+                    }
                 } else if (response.startsWith("OPPONENT_MOVED")) {
                     int loc = Integer.parseInt(response.substring(15));
                     board[loc].setIcon(opponentDisc);
@@ -123,7 +139,19 @@ public class Connect5Client {
                     messageLabel.setText("Opponent Moved. Your turn Again!");
                     System.out.println("Opponent Moved.");
                     isPlayerTurn = true;
-
+                    timeLeft = 15;
+                    timerLabel.setText("Time left: " + timeLeft + "s");
+                    timer = new Timer(1000, e -> {
+                        timeLeft--;
+                        timerLabel.setText("Time left: " + timeLeft + "s");
+                        if (timeLeft <= 0) {
+                            timer.stop();
+                            JOptionPane.showMessageDialog(frame, "Time's up! Your turn is over.");
+                            out.println("TIME_UP");
+                            isPlayerTurn = false;
+                        }
+                    });
+                    timer.start();
                 }else if (response.startsWith("VICTORY")) {
                     JOptionPane.showMessageDialog(frame, "Congratulations you WON!!!");
                     System.out.println("Player Won.");
@@ -140,24 +168,35 @@ public class Connect5Client {
                     break;
 
                 }else if (response.startsWith("MESSAGE")) {
-                    System.out.println("INI MESSAGE: " + response);
                     String messageFill = response.substring(8);
-                    System.out.println("INI PARAM:" + messageFill);
                     messageLabel.setText(messageFill);
                     if(messageFill.startsWith("Your move")){
                         System.out.println("Player Turn");
                         isPlayerTurn = true;
                     }
-                    System.out.println("isPlayerTurn: " + isPlayerTurn);
                     System.out.println("Message");
-
-
                 }
                 else if (response.startsWith("OTHER_PLAYER_LEFT")) {
                     JOptionPane.showMessageDialog(frame, "Other Player left");
                     System.out.println("Other Player Exited.");
-                    break;//new
-
+                    break;
+                } else if (response.startsWith("TIME_UP")){
+                    messageLabel.setText("Your time is up!");
+                } else if(response.startsWith("OPPONENT_TIME_UP")){
+                    isPlayerTurn = true;
+                    timeLeft = 15;
+                    timerLabel.setText("Time left: " + timeLeft + "s");
+                    timer = new Timer(1000, e -> {
+                        timeLeft--;
+                        timerLabel.setText("Time left: " + timeLeft + "s");
+                        if (timeLeft <= 0) {
+                            timer.stop();
+                            JOptionPane.showMessageDialog(frame, "Time's up! Your turn is over.");
+                            out.println("TIME_UP");
+                            isPlayerTurn = false;
+                        }
+                    });
+                    timer.start();
                 }
             }
             out.println("QUIT");

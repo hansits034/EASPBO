@@ -207,6 +207,10 @@ class Connect5Game {
 
                 while (true) {// Repeatedly get Client commands & Processes them.
                     String command = input.readLine();
+                    if(command == null){
+                        System.out.println("Null command");
+                        continue;
+                    }
                     if (command.startsWith("MOVE")) {
                         int location = Integer.parseInt(command.substring(5));
                         int validlocation = moveCheck(location, this);
@@ -218,7 +222,12 @@ class Connect5Game {
                         } else {
                             output.println("MESSAGE Wait your Turn");
                         }
-                    } else if (command.startsWith("QUIT")) {
+                    } else if (command.startsWith("TIME_UP")){
+                        System.out.println("TIME UP. Change Turn");
+                        output.println("TESSS TIME UPPP");
+                        opponent.output.println("OPPONENT_TIME_UP ");
+                        currentPlayer = currentPlayer.opponent;
+                    }else if (command.startsWith("QUIT")) {
                         System.out.println("Player Exited. Game Over.");
                         return;
                     }
