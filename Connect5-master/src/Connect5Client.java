@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
+import java.awt.Font;
+import javax.swing.BorderFactory;
 
 public class Connect5Client {
 
@@ -27,17 +29,14 @@ public class Connect5Client {
     private ImageIcon opponentDisc;
 
     private Socket socket;
-    //private Scanner in;
     private BufferedReader in;
-    //private PrintWriter out;
     private PrintWriter out;
     private String name;
     private boolean isPlayerTurn = false;
     String response;
     private Timer timer;
     private int timeLeft = 15;
-    private JLabel timerLabel = new JLabel("Time left: 15s");
-
+    private JLabel timerLabel = new JLabel("Time left: 15s", JLabel.CENTER);
 
     /**
      * @return String
@@ -62,12 +61,15 @@ public class Connect5Client {
         out = new PrintWriter(socket.getOutputStream(), true);
 
         messageLabel.setBackground(Color.lightGray);
+        messageLabel.setBackground(Color.lightGray);
+        messageLabel.setFont(new Font("Arial", Font.BOLD, 24)); 
+        messageLabel.setHorizontalAlignment(JLabel.CENTER);
         frame.getContentPane().add(messageLabel, BorderLayout.SOUTH);
 
         JPanel boardPanel = new JPanel();
         boardPanel.setBackground(Color.black);
 
-        boardPanel.setLayout(new GridLayout(9, 9, 3, 3)); //9 columns x 6 Rows
+        boardPanel.setLayout(new GridLayout(9, 9, 3, 3));
         for (int i = 0; i < board.length; i++) {
             final int j = i;
             board[i] = new Square();
@@ -83,7 +85,23 @@ public class Connect5Client {
             boardPanel.add(board[i]);
         }
         frame.getContentPane().add(boardPanel, BorderLayout.CENTER);
+        // timer label
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 48));
+        timerLabel.setForeground(Color.RED);
+        timerLabel.setOpaque(true);
+        timerLabel.setBackground(Color.BLACK);
+        timerLabel.setHorizontalAlignment(JLabel.CENTER);
+        timerLabel.setVerticalAlignment(JLabel.CENTER); 
+        timerLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JPanel timerPanel = new JPanel(new BorderLayout());
+        timerPanel.setBackground(Color.BLACK);
+        timerPanel.add(timerLabel, BorderLayout.CENTER);
+
+        frame.getContentPane().add(timerPanel, BorderLayout.NORTH);
         frame.getContentPane().add(timerLabel, BorderLayout.NORTH);
+
+
     }
 
     /**
@@ -115,13 +133,8 @@ public class Connect5Client {
                 response = in.readLine();
                 System.out.println(response);
                 if (response.startsWith("VALID_MOVE")) {
-                    messageLabel.setText("Valid Move, Opponents Turn, Please Wait...");
+                    messageLabel.setText(name+": Valid Move, Opponents Turn, Please Wait...");
                     int chosenBoard = Integer.parseInt(response.substring(10));
-                    // if(chosenBoard == 100){
-                    //     isPlayerTurn = false;
-                    //     System.out.println("Time's up");
-                    //     continue;
-                    // }
                     square = board[chosenBoard];
                     square.setIcon(disc);
                     square.repaint();
@@ -134,7 +147,7 @@ public class Connect5Client {
                     int loc = Integer.parseInt(response.substring(15));
                     board[loc].setIcon(opponentDisc);
                     board[loc].repaint();
-                    messageLabel.setText("Opponent Moved. Your turn Again!");
+                    messageLabel.setText(name+ ": Opponent Moved. Your turn Again!");
                     System.out.println("Opponent Moved.");
                     isPlayerTurn = true;
                     timeLeft = 15;
@@ -167,7 +180,7 @@ public class Connect5Client {
 
                 }else if (response.startsWith("MESSAGE")) {
                     String messageFill = response.substring(8);
-                    messageLabel.setText(messageFill);
+                    messageLabel.setText(name+": "+messageFill);
                     if(messageFill.startsWith("Your move")){
                         System.out.println("Player Turn");
                         isPlayerTurn = true;
@@ -179,7 +192,7 @@ public class Connect5Client {
                     System.out.println("Other Player Exited.");
                     break;
                 } else if (response.startsWith("TIME_UP")){
-                    messageLabel.setText("Your time is up!");
+                    messageLabel.setText(name + ": Your time is up!");
                 } else if(response.startsWith("OPPONENT_TIME_UP")){
                     isPlayerTurn = true;
                     timeLeft = 15;
@@ -261,13 +274,10 @@ public class Connect5Client {
             if (playerName != null && !playerName.trim().isEmpty()) {
                 c.setName(playerName);
             } else {
-                // Optional: Handle case if user cancels or enters an empty name
                 JOptionPane.showMessageDialog(c.frame, "Name cannot be empty!");
-                return; // Exit or prompt for name again
+                return; 
             }
 
-            // System.out.println("Please enter your name: ");
-            // c.setName(s.nextLine());
             System.out.println("--- Game Command Log --- ");
             c.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             c.frame.setSize(720, 720);
