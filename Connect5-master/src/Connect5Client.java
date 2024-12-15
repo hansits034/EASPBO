@@ -67,7 +67,6 @@ public class Connect5Client {
         for (int i = 0; i < board.length; i++) {
             final int j = i;
             board[i] = new Square();
-            System.out.println("isPlayerTurn: " + isPlayerTurn);
             board[i].addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
                     if(isPlayerTurn){
@@ -220,9 +219,18 @@ public class Connect5Client {
         while (true) {
 
             Connect5Client c = new Connect5Client("127.0.0.1");//Localhost passed in as serveraddress
-            Scanner s = new Scanner(System.in);
-            System.out.println("Please enter your name: ");
-            c.setName(s.nextLine());
+            // Scanner s = new Scanner(System.in);
+            String playerName = JOptionPane.showInputDialog(c.frame, "Enter your name:");
+            if (playerName != null && !playerName.trim().isEmpty()) {
+                c.setName(playerName);
+            } else {
+                // Optional: Handle case if user cancels or enters an empty name
+                JOptionPane.showMessageDialog(c.frame, "Name cannot be empty!");
+                return; // Exit or prompt for name again
+            }
+
+            // System.out.println("Please enter your name: ");
+            // c.setName(s.nextLine());
             System.out.println("--- Game Command Log --- ");
             c.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             c.frame.setSize(720, 720);
